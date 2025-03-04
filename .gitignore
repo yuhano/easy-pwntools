@@ -176,3 +176,4 @@ cython_debug/
 ghidra/
 logs/
 projects/
+ex/
