@@ -15,5 +15,7 @@ def main():
 
     print_analysis_result(analysis_result)
 
+    analyzer.run_decompile()
+
 if __name__ == "__main__":
     main()

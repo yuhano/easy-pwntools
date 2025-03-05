@@ -61,6 +61,7 @@ class ELFAnalysisResult:
       checksec_analysis (List[str]): checksec 정보를 기반으로 한 추가 분석 메시지 리스트
       strings_file (Optional[str]): ELF 파일에서 추출된 문자열이 저장된 파일 경로 (없으면 None)
       ropgadget_file (Optional[str]): ELF 파일에서 추출된 gadget 저장된 파일 경로 (없으면 None)
+      decompile_file (Optional[str]): ELF 파일의 디컴파일 파일이 저장된 파일 경로 (없으면 None)
     """
     file_info_raw: str
     file_info: ELFFileInfo
@@ -68,4 +69,5 @@ class ELFAnalysisResult:
     checksec_analysis: List[str] = field(default_factory=list)
     strings_file: Optional[str] = None
     ropgadget_file: Optional[str] = None
+    decompile_file: Optional[str] = None
 

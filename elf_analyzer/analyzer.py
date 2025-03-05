@@ -5,6 +5,7 @@ import time
 import os
 from typing import List, Optional
 from .models import ELFAnalysisResult, ChecksecInfo, ELFFileInfo
+from decompile.run import run_decompile
 
 class ELFAnalyzer:
     """
@@ -243,3 +244,14 @@ class ELFAnalyzer:
             while process.poll() is None:
                 time.sleep(0.05)
         return output_file
+
+    def run_decompile(self) -> None:
+        """
+        Ghidra의 decompile 명령어를 사용하여 ELF 파일의 디컴파일 정보를 추출하고,
+        logs/<파일명>/decompile 디렉토리에 결과를 저장한 후, 저장된 로그 파일의 경로를 반환합니다.
+    
+        반환값:
+          str: 저장된 decompile 결과 로그 파일의 경로
+        """
+        log_path = run_decompile(self.file_path)
+        return log_path
