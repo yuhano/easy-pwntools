@@ -10,9 +10,9 @@ def create_folders():
     for folder in folders:
         if not os.path.exists(folder):
             os.mkdir(folder)
-            print(f"[+] '{folder}' 폴더 생성 완료.")
+            print(f"[+] '{folder}' folder created successfully.")
         else:
-            print(f"[-] '{folder}' 폴더가 이미 존재합니다.")
+            print(f"[-] '{folder}' folder already exists.")
 
 def setup_virtualenv():
     """
@@ -20,10 +20,10 @@ def setup_virtualenv():
     """
     venv_dir = 'venv'
     if not os.path.exists(venv_dir):
-        print("[*] 가상환경(venv) 생성 중...")
+        print("[*] Creating virtual environment (venv)...")
         subprocess.run(["python3", "-m", "venv", venv_dir], check=True)
     else:
-        print("[*] 가상환경(venv)가 이미 존재합니다.")
+        print("[*] Virtual environment (venv) already exists.")
 
     # 운영체제에 따라 pip 실행파일 경로 설정
     pip_path = os.path.join(venv_dir, "bin", "pip")
@@ -31,10 +31,10 @@ def setup_virtualenv():
         pip_path = os.path.join(venv_dir, "Scripts", "pip.exe")
 
     if os.path.exists("requirements.txt"):
-        print("[*] requirements.txt에 명시된 패키지 설치 중...")
+        print("[*] Installing packages from requirements.txt...")
         subprocess.run([pip_path, "install", "-r", "requirements.txt"], check=True)
     else:
-        print("[!] requirements.txt 파일이 존재하지 않습니다.")
+        print("[!] requirements.txt file does not exist.")
 
 def setup_ghidra():
     """
