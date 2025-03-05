@@ -3,8 +3,14 @@
 import sys
 import glob
 import subprocess
+import os
 
 def run_decompile(input_file):
+
+    if not os.path.exists("decompile/decompile_script.py"):
+        print("Error: 'decompile_script.py' not exist")
+        sys.exit(1)
+    
     # ghidra 디렉토리 내의 analyzeHeadless 실행 파일 찾기
     matches = glob.glob('./ghidra/*/support/analyzeHeadless')
     if not matches:
@@ -20,7 +26,7 @@ def run_decompile(input_file):
         "-import", input_file,
         "-deleteProject",
         "-overwrite",
-        "-postScript", "decompile.py"
+        "-postScript", "decompile/decompile_script.py"
     ]
     
     # 명령어 실행
