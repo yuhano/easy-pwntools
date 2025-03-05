@@ -16,8 +16,6 @@ def main():
     analysis_result.strings_file = strings_file
 
     print_analysis_result(analysis_result)
-    vuln_results = analyzer.check_vulnerable_functions(args.functions)
-    print_vulnerable_functions(vuln_results)
 
 if __name__ == "__main__":
     main()

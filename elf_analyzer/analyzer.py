@@ -214,34 +214,3 @@ class ELFAnalyzer:
             while process.poll() is None:
                 time.sleep(0.05)
         return output_file
-
-    def check_vulnerable_functions(self, function_names: Optional[List[str]] = None) -> List[VulnerableFunctionResult]:
-        """
-        ELF 파일 내의 취약 함수 존재 여부를 확인합니다.
-        함수 이름 리스트가 주어지면 해당 함수들을 확인하고, 없으면 인터랙티브 모드로 입력을 받습니다.
-
-        arguments:
-          function_names (Optional[List[str]]): 확인할 함수 이름 리스트 (None인 경우 인터랙티브 모드)
-
-        return:
-          List[VulnerableFunctionResult]: 각 함수의 확인 결과를 담은 리스트
-        """
-        results: List[VulnerableFunctionResult] = []
-        if self._raw_file_info and "not stripped" in self._raw_file_info:
-            readelf_output = self.run_command(f"readelf -s {self.file_path}") or ""
-            if function_names is None:
-                while True:
-                    func_name = input("Please enter function's name (q:quit): ").strip()
-                    if func_name.lower() == "q":
-                        break
-                    found = func_name in readelf_output
-                    message = f"Function '{func_name}' found in binary." if found else "Not found."
-                    results.append(VulnerableFunctionResult(func_name, found, message))
-            else:
-                for func_name in function_names:
-                    found = func_name in readelf_output
-                    message = f"Function '{func_name}' found in binary." if found else "Not found."
-                    results.append(VulnerableFunctionResult(func_name, found, message))
-        else:
-            results.append(VulnerableFunctionResult("", False, "Error: Stripped or no section header in this binary."))
-        return results
