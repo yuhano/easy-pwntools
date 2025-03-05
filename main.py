@@ -2,7 +2,7 @@
 # main.py
 import argparse
 from elf_analyzer.analyzer import ELFAnalyzer
-from elf_analyzer.printer import print_analysis_result, print_vulnerable_functions
+from elf_analyzer.printer import print_analysis_result
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze ELF binaries and extract strings.")
