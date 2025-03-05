@@ -12,8 +12,6 @@ def main():
 
     analyzer = ELFAnalyzer(args.elf_file)
     analysis_result = analyzer.analyze()
-    strings_file = analyzer.save_strings()
-    analysis_result.strings_file = strings_file
 
     print_analysis_result(analysis_result)
 

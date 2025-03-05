@@ -19,9 +19,9 @@ class ELFAnalyzer:
           file_path (str): 분석할 ELF 파일의 경로
         """
         self.file_path = file_path
-        self._raw_file_info = ""
+        self.analysis_result = None
 
-    def run_command(self, command: str) -> str:
+    def _run_command(self, command: str) -> str:
         """
         주어진 쉘 명령어를 실행하고 결과 문자열을 반환합니다.
 
@@ -173,28 +173,32 @@ class ELFAnalyzer:
         return:
           ELFAnalysisResult: 파일 정보, checksec 정보 및 분석 메시지를 포함한 분석 결과
         """
-        raw_file_info = self.run_command(f"file {self.file_path}")
-        self._raw_file_info = raw_file_info
-        file_info_data = self._parse_file_info(raw_file_info)
+        if self.analysis_result is None:
+            raw_file_info = self._run_command(f"file {self.file_path}")
+            file_info_data = self._parse_file_info(raw_file_info)
 
-        checksec_str = self.run_command(f"checksec {self.file_path}")
-        checksec_info = self._parse_checksec_info(checksec_str)
-        
-        checksec_analysis = [
-            f"RELRO: {checksec_info.relro}",
-            f"Stack Canary: {checksec_info.stack_canary}",
-            f"NX: {checksec_info.nx}",
-            f"PIE: {checksec_info.pie}"
-        ]
+            checksec_str = self._run_command(f"checksec {self.file_path}")
+            checksec_info = self._parse_checksec_info(checksec_str)
 
-        return ELFAnalysisResult(
-            file_info_raw=raw_file_info,
-            file_info=file_info_data,
-            checksec_info=checksec_info,
-            checksec_analysis=checksec_analysis
-        )
+            checksec_analysis = [
+                f"RELRO: {checksec_info.relro}",
+                f"Stack Canary: {checksec_info.stack_canary}",
+                f"NX: {checksec_info.nx}",
+                f"PIE: {checksec_info.pie}"
+            ]
 
-    def save_strings(self) -> str:
+            strings_file = self._save_strings()
+            
+            self.analysis_result = ELFAnalysisResult(
+                file_info_raw=raw_file_info,
+                file_info=file_info_data,
+                checksec_info=checksec_info,
+                checksec_analysis=checksec_analysis,
+                strings_file=strings_file
+            )
+        return self.analysis_result
+
+    def _save_strings(self) -> str:
         """
         ELF 파일의 strings 결과를 logs/<파일명>/strings 디렉토리에 저장하고,
         저장된 파일 경로를 반환합니다.
