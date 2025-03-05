@@ -67,8 +67,3 @@ class ELFAnalysisResult:
     checksec_analysis: List[str] = field(default_factory=list)
     strings_file: Optional[str] = None
 
-@dataclass
-class VulnerableFunctionResult:
-    function_name: str
-    found: bool
-    message: str

@@ -4,7 +4,7 @@ import sys
 import time
 import os
 from typing import List, Optional
-from .models import ELFAnalysisResult, VulnerableFunctionResult, ChecksecInfo, ELFFileInfo
+from .models import ELFAnalysisResult, ChecksecInfo, ELFFileInfo
 
 class ELFAnalyzer:
     """
