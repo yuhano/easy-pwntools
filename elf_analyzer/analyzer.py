@@ -4,7 +4,7 @@ import sys
 import time
 import os
 from typing import List, Optional
-from .models import ELFAnalysisResult, VulnerableFunctionResult, ChecksecInfo
+from .models import ELFAnalysisResult, VulnerableFunctionResult, ChecksecInfo, ELFFileInfo
 
 class ELFAnalyzer:
     """
@@ -19,7 +19,7 @@ class ELFAnalyzer:
           file_path (str): 분석할 ELF 파일의 경로
         """
         self.file_path = file_path
-        self.file_info = ""
+        self._raw_file_info = ""
 
     def run_command(self, command: str) -> str:
         """
@@ -37,6 +37,78 @@ class ELFAnalyzer:
         except subprocess.CalledProcessError as e:
             return f"Error executing command: {e}"
 
+    def _parse_file_info(self, file_info_str: str) -> ELFFileInfo:
+        """
+        file 명령어의 출력 문자열을 파싱하여 ELFFileInfo 데이터 클래스로 반환합니다.
+        
+        매개변수:
+          file_info_str (str): file 명령어의 출력 문자열
+          
+        반환값:
+          ELFFileInfo: 파싱된 파일 정보 데이터 클래스 인스턴스
+        """
+        try:
+            _, info = file_info_str.split(":", 1)
+        except ValueError:
+            info = file_info_str
+        info = info.strip()
+        tokens = [token.strip() for token in info.split(",")]
+        
+        # 토큰 0: "ELF 64-bit LSB pie executable" 등을 파싱
+        first_token = tokens[0]  # 예: "ELF 64-bit LSB pie executable"
+        parts = first_token.split()
+        bit_format = parts[1] if len(parts) > 1 else ""
+        endian = parts[2] if len(parts) > 2 else ""
+        is_pie = "pie" in first_token.lower()
+        
+        # 토큰 1: CPU 아키텍처
+        cpu_arch = tokens[1] if len(tokens) > 1 else ""
+        
+        # 토큰 2: 버전 정보
+        version = tokens[2] if len(tokens) > 2 else ""
+        
+        # 토큰 3: 링크 방식
+        linking = tokens[3] if len(tokens) > 3 else ""
+        
+        # 토큰 4: 인터프리터 (존재하면)
+        interpreter = None
+        if len(tokens) > 4 and tokens[4].startswith("interpreter"):
+            interpreter = tokens[4][len("interpreter"):].strip()
+        
+        # 토큰 5: BuildID (존재하면)
+        build_id = None
+        if len(tokens) > 5 and tokens[5].startswith("BuildID"):
+            parts_build = tokens[5].split("=", 1)
+            if len(parts_build) == 2:
+                build_id = parts_build[1].strip()
+        
+        # 토큰 6: 대상 운영체제 (존재하면, "for ..."로 시작)
+        target_os = None
+        if len(tokens) > 6 and tokens[6].lower().startswith("for"):
+            target_os = tokens[6][len("for"):].strip()
+        
+        # 토큰 7: 심볼 제거 여부 (존재하면)
+        is_stripped = True
+        if len(tokens) > 7:
+            token7 = tokens[7].lower()
+            if "not stripped" in token7:
+                is_stripped = False
+            elif "stripped" in token7:
+                is_stripped = True
+        
+        return ELFFileInfo(
+            bit_format=bit_format,
+            endian=endian,
+            is_pie=is_pie,
+            cpu_arch=cpu_arch,
+            version=version,
+            linking=linking,
+            interpreter=interpreter,
+            build_id=build_id,
+            target_os=target_os,
+            is_stripped=is_stripped
+        )
+    
     def _parse_checksec_info(self, checksec_info: str) -> ChecksecInfo:
         """
         checksec 명령어 결과 문자열을 파싱하여 ChecksecInfo 데이터 클래스로 반환합니다.
@@ -101,15 +173,13 @@ class ELFAnalyzer:
         return:
           ELFAnalysisResult: 파일 정보, checksec 정보 및 분석 메시지를 포함한 분석 결과
         """
-        file_info = self.run_command(f"file {self.file_path}")
-        if "ELF" not in file_info:
-            sys.exit("Error: This file is not ELF format.")
-        self.file_info = file_info
+        raw_file_info = self.run_command(f"file {self.file_path}")
+        self._raw_file_info = raw_file_info
+        file_info_data = self._parse_file_info(raw_file_info)
 
         checksec_str = self.run_command(f"checksec {self.file_path}")
         checksec_info = self._parse_checksec_info(checksec_str)
         
-        # checksec_analysis는 구조화된 정보를 기반으로 추가 메시지를 구성할 수 있습니다.
         checksec_analysis = [
             f"RELRO: {checksec_info.relro}",
             f"Stack Canary: {checksec_info.stack_canary}",
@@ -118,7 +188,8 @@ class ELFAnalyzer:
         ]
 
         return ELFAnalysisResult(
-            file_info=file_info,
+            file_info_raw=raw_file_info,
+            file_info=file_info_data,
             checksec_info=checksec_info,
             checksec_analysis=checksec_analysis
         )
@@ -156,7 +227,7 @@ class ELFAnalyzer:
           List[VulnerableFunctionResult]: 각 함수의 확인 결과를 담은 리스트
         """
         results: List[VulnerableFunctionResult] = []
-        if self.file_info and "not stripped" in self.file_info:
+        if self._raw_file_info and "not stripped" in self._raw_file_info:
             readelf_output = self.run_command(f"readelf -s {self.file_path}") or ""
             if function_names is None:
                 while True:
