@@ -40,5 +40,7 @@ def print_analysis_result(result: ELFAnalysisResult):
     print()
     if result.strings_file:
         print(f"Strings saved to: {result.strings_file}")
+    if result.ropgadget_file:
+        print(f"RopGadget saved to: {result.ropgadget_file}")
     print()
 

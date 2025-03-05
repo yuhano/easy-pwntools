@@ -188,13 +188,15 @@ class ELFAnalyzer:
             ]
 
             strings_file = self._save_strings()
+            ropgadget_file = self._save_ropgadget()
             
             self.analysis_result = ELFAnalysisResult(
                 file_info_raw=raw_file_info,
                 file_info=file_info_data,
                 checksec_info=checksec_info,
                 checksec_analysis=checksec_analysis,
-                strings_file=strings_file
+                strings_file=strings_file,
+                ropgadget_file=ropgadget_file
             )
         return self.analysis_result
 
@@ -215,6 +217,29 @@ class ELFAnalyzer:
                                        stdout=f,
                                        stderr=subprocess.PIPE,
                                        text=True)
+            while process.poll() is None:
+                time.sleep(0.05)
+        return output_file
+    
+    def _save_ropgadget(self) -> str:
+        """
+        ROPgadget 명령어를 사용하여 ELF 파일의 gadget 정보를 추출하고,
+        logs/<파일명>/ropgadget 디렉토리에 결과를 저장한 후, 저장된 파일 경로를 반환합니다.
+
+        반환값:
+          str: 저장된 ROPgadget 결과 파일의 경로
+        """
+        base_name = os.path.splitext(os.path.basename(self.file_path))[0]
+        output_dir = os.path.join("logs", base_name, "ropgadget")
+        os.makedirs(output_dir, exist_ok=True)
+        output_file = os.path.join(output_dir, f"{base_name}.ropgadget")
+        with open(output_file, "w") as f:
+            process = subprocess.Popen(
+                ["ROPgadget", "--binary", self.file_path],
+                stdout=f,
+                stderr=subprocess.PIPE,
+                text=True
+            )
             while process.poll() is None:
                 time.sleep(0.05)
         return output_file

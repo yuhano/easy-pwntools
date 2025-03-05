@@ -60,10 +60,12 @@ class ELFAnalysisResult:
       checksec_info (ChecksecInfo): checksec 명령어를 통해 수집된 보안 관련 정보를 구조화된 데이터로 저장
       checksec_analysis (List[str]): checksec 정보를 기반으로 한 추가 분석 메시지 리스트
       strings_file (Optional[str]): ELF 파일에서 추출된 문자열이 저장된 파일 경로 (없으면 None)
+      ropgadget_file (Optional[str]): ELF 파일에서 추출된 gadget 저장된 파일 경로 (없으면 None)
     """
     file_info_raw: str
     file_info: ELFFileInfo
     checksec_info: ChecksecInfo
     checksec_analysis: List[str] = field(default_factory=list)
     strings_file: Optional[str] = None
+    ropgadget_file: Optional[str] = None
 
