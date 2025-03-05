@@ -3,13 +3,17 @@ from ghidra.app.decompiler import DecompInterface # type: ignore
 from ghidra.util.task import ConsoleTaskMonitor # type: ignore
 
 class Log():
-    file_path = './logs/'
-
     def __init__(self, binary_name):
         self.binary_name = binary_name
-        self.file_name = '{}{}.log'.format(self.file_path, str(self.binary_name))
+
+        # save path: ./log/<name>/decompile/
+        self.file_path = os.path.join('.', 'logs', str(binary_name), 'decompile')
+        if not os.path.exists(self.file_path):
+            os.makedirs(self.file_path)
+        self.file_name = os.path.join(self.file_path, 'decompile.log')
+
         if os.path.exists(self.file_name):
-            os.remove(self.file_path)
+            os.remove(self.file_name)
         self.file = open(self.file_name, "w+")
         self.file.write('[*] binary Name : ' + str(self.binary_name) + '\n\n')
 
@@ -58,6 +62,7 @@ def main():
         log.loggingFunction(function, decompile_func)
     
     log.close()
+    return log.file_name
         
 if __name__ == '__main__':
     main()
