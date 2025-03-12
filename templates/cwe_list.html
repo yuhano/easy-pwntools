@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CWE List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container-fluid {
+            height: 100vh;
+            display: flex;
+        }
+
+        .menu {
+            width: 20%;
+            background-color: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            border-right: 1px solid #ddd;
+        }
+
+        .menu h2 {
+            margin-bottom: 20px;
+        }
+
+        .menu a {
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .menu .btn {
+            width: 100%;
+        }
+
+        .content {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    height: 100vh; /* 컨테이너 전체 높이 유지 */
+}
+
+.toggle-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* 버튼 간격 조정 */
+    margin-bottom: 20px;
+    margin-top: 0px; /* 위로 밀려 올라가지 않도록 설정 */
+}
+
+.toggle-buttons button {
+    padding: 10px 20px;
+    border: 1px solid #007bff;
+    background-color: white;
+    color: #007bff;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.toggle-buttons button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.info-box {
+    width: 100%;
+    max-width: 800px;
+    min-height: 300px; /* 최소 높이 지정 */
+    max-height: 400px; /* 고정된 높이 설정 */
+    padding: 20px;
+    border: 1px solid #ddd;
+    text-align: left;
+    background-color: #f8f9fa;
+    overflow-y: auto; /* 내용이 많으면 스크롤 */
+    white-space: pre-wrap;
+    font-family: monospace;
+    flex-grow: 1; /* 버튼과 함께 위치가 변하지 않도록 설정 */
+}
+
+    </style>
+    <script>
+        function showInfo(button, infoText) {
+            document.querySelectorAll('.toggle-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            button.classList.add('active');
+
+            if (button.innerText === '파일 명') {
+                const uploadedFileName = localStorage.getItem('uploadedFileName');
+                document.getElementById('info-box').innerText = uploadedFileName ? uploadedFileName : '업로드된 파일 없음';
+            }
+            else if (button.innerText === 'checksec') {
+                const uploadedFileName = localStorage.getItem('uploadedFileName');  // 파일명 가져오기
+
+
+
+                if (!uploadedFileName) {
+                    document.getElementById('info-box').innerText = '업로드된 파일 없음';
+                    return;
+                }
+
+                fetch(`http://localhost:5000/checksec?filename=${encodeURIComponent(uploadedFileName)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('info-box').innerText = data.stdout || '출력 데이터 없음';
+                    })
+                    .catch(error => {
+                        console.error('checksec 실행 중 오류 발생:', error);
+                        document.getElementById('info-box').innerText = 'checksec 실행 오류';
+                    });
+            }
+            else if (button.innerText === 'strings') {
+                const uploadedFileName = localStorage.getItem('uploadedFileName');  // 파일명 가져오기
+
+                if (!uploadedFileName) {
+                    document.getElementById('info-box').innerText = '❌ 업로드된 파일 없음';
+                    return;
+                }
+
+                console.log(`✅ strings 파일 읽기 요청: ${uploadedFileName}.strings`);  // 디버깅 추가
+
+                fetch(`http://localhost:5000/read_strings?filename=${encodeURIComponent(uploadedFileName)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(`✅ 서버 응답 데이터:`, data);  // 서버 응답 확인
+
+                        if (data.stdout && data.stdout.trim() !== "") {
+                            document.getElementById('info-box').innerText = data.stdout;
+                        } else {
+                            document.getElementById('info-box').innerText = "❌ .strings 파일이 비어 있음!";
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ .strings 파일 읽기 중 오류 발생:', error);
+                        document.getElementById('info-box').innerText = '❌ .strings 파일 읽기 오류';
+                    });
+            }
+
+
+
+            else {
+                document.getElementById('info-box').innerText = infoText;
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="menu">
+            <h2 onclick="location.href='real_main.html'" style="cursor: pointer;">MENU</h2>
+            <a href="code_editor.html" class="btn btn-outline-primary w-100">Code Editor</a>
+            <a href="decompiler.html" class="btn btn-outline-primary w-100">Decompiler</a>
+            <a href="cwe_list.html" class="btn btn-outline-primary w-100 active">CWE List</a>
+            <a href="terminal.html" class="btn btn-outline-primary w-100">Terminal</a>
+        </div>
+        <div class="content">
+            <div class="toggle-buttons">
+                <button onclick="showInfo(this, '파일 정보 불러오는중...')">파일 명</button>
+                <button onclick="showInfo(this, '정보 B')">checksec</button>
+                <button onclick="showInfo(this, '정보 C')">rop gadget</button>
+                <button onclick="showInfo(this, '정보 D')">strings</button>
+                <button onclick="showInfo(this, '정보 E')">function list</button>
+                <button onclick="showInfo(this, '정보 F')">terminal execute</button>
+                <button onclick="showInfo(this, '정보 G')">signal</button>
+            </div>
+            <div id="info-box" class="info-box">여기에 정보가 표시됩니다.</div>
+        </div>
+    </div>
+</body>
+
+</html>

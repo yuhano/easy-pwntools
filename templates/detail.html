@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>선택 페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">옵션 입력</h2>
+        <form id="selectionForm" class="d-flex flex-column">
+            <div class="mb-3">
+                <label for="projectName" class="form-label">Project Name</label>
+                <input type="text" class="form-control" id="projectName" name="projectName">
+            </div>
+            <div class="mb-3">
+                <label for="desc" class="form-label">Description</label>
+                <input type="text" class="form-control" id="desc" name="desc">
+            </div>
+            <div class="mb-3">
+                <label for="server" class="form-label">Server NC Connect</label>
+                <input type="text" class="form-control" id="server" name="server">
+            </div>
+            <div class="mb-3">
+                <label for="ctfName" class="form-label">CTF Name</label>
+                <input type="text" class="form-control" id="ctfName" name="ctfName">
+            </div>
+            <div class="mb-3">
+                <label for="docker" class="form-label">Contain Docker File?</label>
+                <input type="text" class="form-control" id="docker" name="docker">
+            </div>
+            <div class="mb-3">
+                <label for="apiKey" class="form-label">GPT API Key</label>
+                <input type="text" class="form-control" id="apiKey" name="apiKey">
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-outline-primary" id="fullAutoExploit" data-value="full_auto_exploit">Full Auto Exploit</button>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-success">제출</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('fullAutoExploit').addEventListener('click', function() {
+            this.classList.toggle('btn-primary');
+            this.classList.toggle('btn-outline-primary');
+        });
+    
+        document.getElementById('selectionForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            let formData = {
+                projectName: document.getElementById('projectName').value,
+                desc: document.getElementById('desc').value,
+                server: document.getElementById('server').value,
+                ctfName: document.getElementById('ctfName').value,
+                docker: document.getElementById('docker').value,
+                apiKey: document.getElementById('apiKey').value,
+                fullAutoExploit: document.getElementById('fullAutoExploit').classList.contains('btn-primary')
+            };
+    
+            // 필요한 입력 필드 체크
+            let isEmpty = Object.keys(formData).some(key => key !== 'fullAutoExploit' && formData[key].trim() === '');
+            if (isEmpty) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+    
+            // URL 파라미터로 데이터 전달
+            const queryString = new URLSearchParams(formData).toString();
+            window.location.href = `main.html?${queryString}`;
+        });
+    </script>
+</body>
+</html>
