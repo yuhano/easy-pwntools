@@ -4,11 +4,13 @@ import sys
 import glob
 import subprocess
 import os
+from config.config_manager import config
 
 def run_decompile(input_file):
+    script_path = config.get('decompile', 'ghidra_decompile_script')
 
-    if not os.path.exists("decompile/decompile_script.py"):
-        print("Error: 'decompile_script.py' not exist")
+    if not os.path.exists(script_path):
+        print(f"Error: {script_path} not exist")
         sys.exit(1)
     
     # ghidra 디렉토리 내의 analyzeHeadless 실행 파일 찾기
@@ -26,7 +28,7 @@ def run_decompile(input_file):
         "-import", input_file,
         "-deleteProject",
         "-overwrite",
-        "-postScript", "decompile/decompile_script.py"
+        "-postScript", script_path
     ]
     
     # 명령어 실행

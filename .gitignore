@@ -177,3 +177,4 @@ ghidra/
 logs/
 projects/
 ex/
+config.ini
