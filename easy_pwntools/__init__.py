@@ -7,7 +7,7 @@ def create_app():
 
     os.makedirs(app.config['UPLOAD_PATH'], exist_ok=True)
 
-    from .views import main_views
-    app.register_blueprint(main_views.bp)
+    from .routes import routes_list
+    routes_list(app)
 
     return app

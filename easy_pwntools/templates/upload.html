@@ -17,9 +17,6 @@
         </div>
         <div id="fileInfo" class="mb-3"></div>
         <button class="btn btn-primary" id="uploadBtn">업로드</button>
-        <div class="progress mt-3 d-none">
-            <div class="progress-bar" role="progressbar" style="width: 0%;" id="progressBar">0%</div>
-        </div>
     </div>
 
     <script>
@@ -45,10 +42,6 @@
             const formData = new FormData();
             formData.append('file', file);
 
-            const progressBar = document.getElementById('progressBar');
-            const progressContainer = document.querySelector('.progress');
-            progressContainer.classList.remove('d-none');
-
             fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -60,8 +53,6 @@
                 return response.json();
             })
             .then(data => {
-                progressBar.style.width = '100%';
-                progressBar.textContent = '100%';
                 alert('파일 업로드 완료!');
                 window.location.href = 'detail';
             })
