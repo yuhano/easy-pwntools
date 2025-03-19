@@ -19,3 +19,13 @@ python -m pip install --upgrade pip ( 혹은 pip -m pip install --upgrade pip )
 ### 4. flask 실행
 
 flask run
+
+## 환경 세팅
+
+### 포트 수정
+
+FLASK_RUN_PORT 값을 원하는 포트로 변경 ( default : 5001 )
+
+### 웹사이트 주소
+
+http://localhost:5001
