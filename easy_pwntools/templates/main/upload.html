@@ -53,8 +53,8 @@
                 return response.json();
             })
             .then(data => {
-                alert('파일 업로드 완료!');
-                window.location.href = 'detail';
+                alert(data.message);
+                window.location.href = 'details';
             })
             .catch(error => {
                 alert('파일 업로드 중 오류가 발생했습니다.');

@@ -10,7 +10,7 @@
     <div class="container mt-5">
         <h2 class="mb-4">선택한 옵션</h2>
         <ul id="selectedOptions" class="list-group mb-3"></ul>
-        <a href="detail.html" class="btn btn-primary">다시 선택하기</a>
+        <a class="btn btn-primary" id="retry_details">다시 선택하기</a>
     </div>
 
     <script>
@@ -42,6 +42,10 @@
         } else {
             selectedOptionsList.innerHTML = '<li class="list-group-item">선택된 옵션이 없습니다.</li>';
         }
+        
+        document.getElementById('retryDetails').addEventListener('retry_details', function() {
+            window.location.href = `details`;
+        });
     </script>
 </body>
 </html>

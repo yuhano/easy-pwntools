@@ -15,8 +15,8 @@
                 <input type="text" class="form-control" id="projectName" name="projectName">
             </div>
             <div class="mb-3">
-                <label for="desc" class="form-label">Description</label>
-                <input type="text" class="form-control" id="desc" name="desc">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" class="form-control" id="description" name="description">
             </div>
             <div class="mb-3">
                 <label for="server" class="form-label">Server NC Connect</label>
@@ -27,18 +27,18 @@
                 <input type="text" class="form-control" id="ctfName" name="ctfName">
             </div>
             <div class="mb-3">
-                <label for="docker" class="form-label">Contain Docker File?</label>
-                <input type="text" class="form-control" id="docker" name="docker">
+                <label for="isDockerFile" class="form-label">Contain Docker File?</label>
+                <input type="text" class="form-control" id="isDockerFile" name="isDockerFile">
             </div>
             <div class="mb-3">
-                <label for="apiKey" class="form-label">GPT API Key</label>
-                <input type="text" class="form-control" id="apiKey" name="apiKey">
+                <label for="gptApiKey" class="form-label">GPT API Key</label>
+                <input type="text" class="form-control" id="gptApiKey" name="gptApiKey">
             </div>
             <div class="mb-3">
                 <button type="button" class="btn btn-outline-primary" id="fullAutoExploit" data-value="full_auto_exploit">Full Auto Exploit</button>
             </div>
             <div class="d-flex justify-content-end mt-3">
-                <button type="submit" class="btn btn-success">제출</button>
+                <button type="submit" class="btn btn-success" id="submit">제출</button>
             </div>
         </form>
     </div>
@@ -52,13 +52,13 @@
         document.getElementById('selectionForm').addEventListener('submit', function(event) {
             event.preventDefault();
     
-            let formData = {
+            const formData = {
                 projectName: document.getElementById('projectName').value,
-                desc: document.getElementById('desc').value,
+                description: document.getElementById('description').value,
                 server: document.getElementById('server').value,
                 ctfName: document.getElementById('ctfName').value,
-                docker: document.getElementById('docker').value,
-                apiKey: document.getElementById('apiKey').value,
+                isDockerFile: document.getElementById('isDockerFile').value,
+                gptApiKey: document.getElementById('gptApiKey').value,
                 fullAutoExploit: document.getElementById('fullAutoExploit').classList.contains('btn-primary')
             };
     
@@ -69,9 +69,26 @@
                 return;
             }
     
-            // URL 파라미터로 데이터 전달
-            const queryString = new URLSearchParams(formData).toString();
-            window.location.href = `main.html?${queryString}`;
+            fetch('/details', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('에러 발생!');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                const queryString = new URLSearchParams(formData).toString();
+                window.location.href = `validate_details?${queryString}`;
+            })
+            .catch(error => {
+                alert('에러가 발생했습니다.');
+                console.error('Error:', error);
+            });
         });
     </script>
 </body>
