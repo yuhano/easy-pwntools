@@ -16,6 +16,6 @@ pip install -r requirement.txt
 
 python -m pip install --upgrade pip ( 혹은 pip -m pip install --upgrade pip )
 
-### flask 실행
+### 4. flask 실행
 
 flask run
