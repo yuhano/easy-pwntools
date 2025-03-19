@@ -41,15 +41,29 @@
     <div class="container-fluid">
         <div class="menu">
             <h2>MENU</h2>
-            <a href="code_editor.html" class="btn btn-outline-primary w-100">Code Editor</a>
-            <a href="decompiler.html" class="btn btn-outline-primary w-100 active">Decompiler</a>
-            <a href="cwe_list.html" class="btn btn-outline-primary w-100">CWE List</a>
-            <a href="terminal.html" class="btn btn-outline-primary w-100">Terminal</a>
+            <a class="btn btn-outline-primary w-100" id="code_editor">Code Editor</a>
+            <a class="btn btn-outline-primary w-100" id="decompiler">Decompiler</a>
+            <a class="btn btn-outline-primary w-100" id="cwe_list">CWE List</a>
+            <a class="btn btn-outline-primary w-100" id="terminal">Terminal</a>
         </div>
         <div class="content">
             <div class="left-section">왼쪽 50%</div>
             <div class="right-section">오른쪽 50%</div>
         </div>
     </div>
+    <script>
+        document.getElementById('code_editor').addEventListener('click', function() {
+            window.location.href = `/menu/code_editor`;
+        });
+        document.getElementById('decompiler').addEventListener('click', function() {
+            window.location.href = `/menu/decompiler`;
+        });
+        document.getElementById('cwe_list').addEventListener('click', function() {
+            window.location.href = `/menu/cwe_list`;
+        });
+        document.getElementById('terminal').addEventListener('click', function() {
+            window.location.href = `/menu/terminal`;
+        });
+    </script>
 </body>
 </html>
